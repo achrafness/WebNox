@@ -1,0 +1,143 @@
+{% extends "base.html" %}
+
+{% block title %}{{ course.title }}{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- Course Header -->
+    <div class="row mb-4">
+        <div class="col-lg-8">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{{ url_for('courses.list_courses') }}">Courses</a></li>
+                    <li class="breadcrumb-item active">{{ course.title }}</li>
+                </ol>
+            </nav>
+            
+            <div class="d-flex align-items-center gap-2 mb-3">
+                <span class="badge bg-{{ 'success' if course.difficulty == 'beginner' else 'warning' if course.difficulty == 'intermediate' else 'danger' }}">
+                    {{ course.difficulty | title }}
+                </span>
+                <span class="badge bg-primary">{{ course.category }}</span>
+            </div>
+            
+            <h1 class="fw-bold">{{ course.title }}</h1>
+            <p class="lead text-muted">{{ course.description }}</p>
+        </div>
+        <div class="col-lg-4">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body text-center p-4">
+                    <div class="row mb-3">
+                        <div class="col-6">
+                            <h4 class="mb-0 text-primary">{{ course.points }}</h4>
+                            <small class="text-muted">Points</small>
+                        </div>
+                        <div class="col-6">
+                            <h4 class="mb-0">{{ course.get_total_lessons() }}</h4>
+                            <small class="text-muted">Lessons</small>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <small class="text-muted">
+                            <i class="bi bi-clock me-1"></i>{{ course.duration_minutes }} minutes
+                        </small>
+                    </div>
+                    
+                    {% if current_user.is_authenticated %}
+                        {% if user_progress %}
+                            <div class="progress mb-3" style="height: 8px;">
+                                <div class="progress-bar" role="progressbar" 
+                                     style="width: {{ user_progress.progress_percentage }}%"></div>
+                            </div>
+                            <small class="text-muted d-block mb-3">{{ user_progress.progress_percentage }}% complete</small>
+                            <a href="{{ url_for('courses.start_course', slug=course.slug) }}" class="btn btn-primary w-100">
+                                <i class="bi bi-play-circle me-2"></i>Continue Learning
+                            </a>
+                        {% else %}
+                            <a href="{{ url_for('courses.start_course', slug=course.slug) }}" class="btn btn-primary w-100">
+                                <i class="bi bi-play-circle me-2"></i>Start Course
+                            </a>
+                        {% endif %}
+                    {% else %}
+                        <a href="{{ url_for('auth.login') }}" class="btn btn-primary w-100">
+                            <i class="bi bi-box-arrow-in-right me-2"></i>Login to Start
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Course Content -->
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-transparent">
+                    <h5 class="mb-0"><i class="bi bi-list-ol text-primary me-2"></i>Course Content</h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="list-group list-group-flush">
+                        {% for lesson in course.lessons %}
+                        <div class="list-group-item d-flex justify-content-between align-items-center py-3">
+                            <div class="d-flex align-items-center">
+                                {% if lesson.id in completed_lessons %}
+                                    <span class="badge bg-success rounded-circle me-3" style="width: 30px; height: 30px; line-height: 20px;">
+                                        <i class="bi bi-check-lg"></i>
+                                    </span>
+                                {% else %}
+                                    <span class="badge bg-light text-dark rounded-circle me-3" style="width: 30px; height: 30px; line-height: 20px;">
+                                        {{ loop.index }}
+                                    </span>
+                                {% endif %}
+                                <div>
+                                    <h6 class="mb-0">{{ lesson.title }}</h6>
+                                    <small class="text-muted">
+                                        <i class="bi bi-clock me-1"></i>{{ lesson.duration_minutes }} min
+                                    </small>
+                                </div>
+                            </div>
+                            {% if current_user.is_authenticated %}
+                                <a href="{{ url_for('courses.lesson', slug=course.slug, lesson_slug=lesson.slug) }}" 
+                                   class="btn btn-sm btn-outline-primary">
+                                    {% if lesson.id in completed_lessons %}Review{% else %}Start{% endif %}
+                                </a>
+                            {% endif %}
+                        </div>
+                        {% else %}
+                        <div class="list-group-item text-center py-5">
+                            <i class="bi bi-journal-text display-4 text-muted"></i>
+                            <p class="text-muted mt-2">No lessons available yet.</p>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="col-lg-4">
+            <!-- Related Labs -->
+            {% if course.labs %}
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-transparent">
+                    <h5 class="mb-0"><i class="bi bi-terminal text-primary me-2"></i>Related Labs</h5>
+                </div>
+                <div class="card-body">
+                    {% for lab in course.labs %}
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div>
+                            <h6 class="mb-0">{{ lab.title }}</h6>
+                            <small class="text-muted">{{ lab.points }} pts</small>
+                        </div>
+                        <a href="{{ url_for('labs.lab_detail', slug=lab.slug) }}" class="btn btn-sm btn-outline-success">
+                            Try Lab
+                        </a>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

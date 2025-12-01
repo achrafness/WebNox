@@ -1,0 +1,141 @@
+{% extends "base.html" %}
+
+{% block title %}{{ lesson.title }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    .lesson-content {
+        font-size: 1.1rem;
+        line-height: 1.8;
+    }
+    .lesson-content h2, .lesson-content h3, .lesson-content h4 {
+        margin-top: 2rem;
+        margin-bottom: 1rem;
+    }
+    .lesson-content pre {
+        background: #1e1e1e;
+        color: #d4d4d4;
+        padding: 1rem;
+        border-radius: 0.5rem;
+        overflow-x: auto;
+    }
+    .lesson-content code {
+        background: #f4f4f4;
+        padding: 0.2rem 0.4rem;
+        border-radius: 0.25rem;
+        font-family: 'JetBrains Mono', monospace;
+    }
+    .lesson-content pre code {
+        background: transparent;
+        padding: 0;
+    }
+    .lesson-sidebar {
+        position: sticky;
+        top: 80px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row">
+        <!-- Lesson Sidebar -->
+        <div class="col-lg-3 d-none d-lg-block">
+            <div class="lesson-sidebar">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-header bg-dark text-light">
+                        <h6 class="mb-0">
+                            <a href="{{ url_for('courses.course_detail', slug=course.slug) }}" class="text-light text-decoration-none">
+                                <i class="bi bi-arrow-left me-2"></i>{{ course.title }}
+                            </a>
+                        </h6>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="list-group list-group-flush">
+                            {% for l in lessons %}
+                            <a href="{{ url_for('courses.lesson', slug=course.slug, lesson_slug=l.slug) }}" 
+                               class="list-group-item list-group-item-action d-flex align-items-center py-2 {{ 'active' if l.id == lesson.id else '' }}">
+                                <span class="badge {{ 'bg-success' if l.id == lesson.id else 'bg-light text-dark' }} rounded-circle me-2" 
+                                      style="width: 24px; height: 24px; line-height: 16px; font-size: 0.75rem;">
+                                    {{ loop.index }}
+                                </span>
+                                <small>{{ l.title[:25] }}{% if l.title|length > 25 %}...{% endif %}</small>
+                            </a>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="col-lg-9">
+            <!-- Lesson Header -->
+            <div class="mb-4">
+                <nav aria-label="breadcrumb" class="d-lg-none">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="{{ url_for('courses.list_courses') }}">Courses</a></li>
+                        <li class="breadcrumb-item"><a href="{{ url_for('courses.course_detail', slug=course.slug) }}">{{ course.title }}</a></li>
+                        <li class="breadcrumb-item active">{{ lesson.title }}</li>
+                    </ol>
+                </nav>
+                
+                <h1 class="fw-bold">{{ lesson.title }}</h1>
+                <div class="d-flex align-items-center gap-3 text-muted">
+                    <small><i class="bi bi-clock me-1"></i>{{ lesson.duration_minutes }} minutes</small>
+                    {% if lesson_progress and lesson_progress.status == 'completed' %}
+                        <span class="badge bg-success"><i class="bi bi-check-lg me-1"></i>Completed</span>
+                    {% else %}
+                        <span class="badge bg-warning"><i class="bi bi-hourglass me-1"></i>In Progress</span>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Video (if available) -->
+            {% if lesson.video_url %}
+            <div class="ratio ratio-16x9 mb-4">
+                <iframe src="{{ lesson.video_url }}" title="{{ lesson.title }}" allowfullscreen></iframe>
+            </div>
+            {% endif %}
+
+            <!-- Lesson Content -->
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-body p-4 p-lg-5 lesson-content">
+                    {{ lesson.content | safe }}
+                </div>
+            </div>
+
+            <!-- Navigation -->
+            <div class="d-flex justify-content-between align-items-center">
+                {% if prev_lesson %}
+                    <a href="{{ url_for('courses.lesson', slug=course.slug, lesson_slug=prev_lesson.slug) }}" 
+                       class="btn btn-outline-primary">
+                        <i class="bi bi-arrow-left me-2"></i>Previous: {{ prev_lesson.title[:20] }}...
+                    </a>
+                {% else %}
+                    <div></div>
+                {% endif %}
+
+                {% if lesson_progress and lesson_progress.status != 'completed' %}
+                    <a href="{{ url_for('courses.complete_lesson', slug=course.slug, lesson_slug=lesson.slug) }}" 
+                       class="btn btn-success">
+                        <i class="bi bi-check-lg me-2"></i>Mark Complete
+                    </a>
+                {% endif %}
+
+                {% if next_lesson %}
+                    <a href="{{ url_for('courses.lesson', slug=course.slug, lesson_slug=next_lesson.slug) }}" 
+                       class="btn btn-primary">
+                        Next: {{ next_lesson.title[:20] }}...<i class="bi bi-arrow-right ms-2"></i>
+                    </a>
+                {% else %}
+                    <a href="{{ url_for('courses.course_detail', slug=course.slug) }}" 
+                       class="btn btn-primary">
+                        <i class="bi bi-check-circle me-2"></i>Finish Course
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

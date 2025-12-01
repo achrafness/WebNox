@@ -1,0 +1,107 @@
+{% extends "base.html" %}
+
+{% block title %}Labs{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <h1 class="fw-bold"><i class="bi bi-terminal text-primary me-2"></i>Security Labs</h1>
+            <p class="text-muted">Practice real vulnerabilities through hands-on CTF-style challenges.</p>
+        </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="btn-group flex-wrap" role="group">
+                <button type="button" class="btn btn-outline-primary active" data-filter="all">All</button>
+                {% for category in categories %}
+                <button type="button" class="btn btn-outline-primary" data-filter="{{ category }}">{{ category }}</button>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Labs Grid -->
+    <div class="row g-4" id="labs-grid">
+        {% for lab in labs %}
+        <div class="col-md-6 col-lg-4 lab-item" data-category="{{ lab.category }}">
+            <div class="card h-100 border-0 shadow-sm lab-card position-relative">
+                {% if lab.id in completed_labs %}
+                <div class="position-absolute top-0 end-0 p-2">
+                    <span class="badge bg-success"><i class="bi bi-check-circle me-1"></i>Solved</span>
+                </div>
+                {% endif %}
+                
+                <div class="card-header bg-dark text-light py-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="badge bg-{{ 'success' if lab.difficulty == 'beginner' else 'warning' if lab.difficulty == 'intermediate' else 'danger' }}">
+                            {{ lab.difficulty | title }}
+                        </span>
+                        <span class="badge bg-info">{{ lab.vulnerability_type }}</span>
+                    </div>
+                </div>
+                
+                <div class="card-body">
+                    <h5 class="card-title">{{ lab.title }}</h5>
+                    <p class="card-text text-muted small">{{ lab.description[:120] }}...</p>
+                    
+                    <div class="d-flex justify-content-between align-items-center mt-3">
+                        <span class="badge bg-primary">{{ lab.category }}</span>
+                        <span class="badge bg-dark">
+                            <i class="bi bi-flag me-1"></i>{{ lab.points }} pts
+                        </span>
+                    </div>
+                    
+                    <div class="mt-3">
+                        <small class="text-muted">
+                            <i class="bi bi-people me-1"></i>{{ lab.get_completion_count() }} completions
+                        </small>
+                    </div>
+                </div>
+                
+                <div class="card-footer bg-transparent border-0">
+                    <a href="{{ url_for('labs.lab_detail', slug=lab.slug) }}" 
+                       class="btn {{ 'btn-success' if lab.id in completed_labs else 'btn-primary' }} w-100">
+                        {% if lab.id in completed_labs %}
+                            <i class="bi bi-arrow-repeat me-2"></i>Try Again
+                        {% else %}
+                            <i class="bi bi-play-circle me-2"></i>Start Lab
+                        {% endif %}
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <div class="col-12 text-center py-5">
+            <i class="bi bi-terminal display-1 text-muted"></i>
+            <h4 class="mt-4 text-muted">No labs available yet</h4>
+            <p class="text-muted">Check back soon for new challenges!</p>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.querySelectorAll('[data-filter]').forEach(btn => {
+    btn.addEventListener('click', function() {
+        document.querySelectorAll('[data-filter]').forEach(b => b.classList.remove('active'));
+        this.classList.add('active');
+        
+        const filter = this.dataset.filter;
+        
+        document.querySelectorAll('.lab-item').forEach(item => {
+            if (filter === 'all' || item.dataset.category === filter) {
+                item.style.display = 'block';
+            } else {
+                item.style.display = 'none';
+            }
+        });
+    });
+});
+</script>
+{% endblock %}

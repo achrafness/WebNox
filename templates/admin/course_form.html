@@ -1,0 +1,105 @@
+{% extends "base.html" %}
+
+{% block title %}{{ 'Edit' if course else 'New' }} Course{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{{ url_for('admin.dashboard') }}">Admin</a></li>
+                    <li class="breadcrumb-item"><a href="{{ url_for('admin.courses') }}">Courses</a></li>
+                    <li class="breadcrumb-item active">{{ 'Edit' if course else 'New' }}</li>
+                </ol>
+            </nav>
+
+            <h2 class="fw-bold mb-4">
+                <i class="bi bi-{{ 'pencil' if course else 'plus-circle' }} text-primary me-2"></i>
+                {{ 'Edit Course' if course else 'Create New Course' }}
+            </h2>
+
+            <div class="card border-0 shadow-sm">
+                <div class="card-body p-4">
+                    <form method="POST">
+                        <div class="row g-3">
+                            <div class="col-md-8">
+                                <label for="title" class="form-label">Title</label>
+                                <input type="text" class="form-control" id="title" name="title" 
+                                       value="{{ course.title if course else '' }}" required>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="slug" class="form-label">Slug</label>
+                                <input type="text" class="form-control" id="slug" name="slug" 
+                                       value="{{ course.slug if course else '' }}" required
+                                       placeholder="e.g., xss-basics">
+                            </div>
+                            <div class="col-12">
+                                <label for="description" class="form-label">Description</label>
+                                <textarea class="form-control" id="description" name="description" rows="3" required>{{ course.description if course else '' }}</textarea>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="category" class="form-label">Category</label>
+                                <select class="form-select" id="category" name="category" required>
+                                    <option value="">Select...</option>
+                                    <option value="XSS" {{ 'selected' if course and course.category == 'XSS' else '' }}>XSS</option>
+                                    <option value="SQL Injection" {{ 'selected' if course and course.category == 'SQL Injection' else '' }}>SQL Injection</option>
+                                    <option value="CSRF" {{ 'selected' if course and course.category == 'CSRF' else '' }}>CSRF</option>
+                                    <option value="SSRF" {{ 'selected' if course and course.category == 'SSRF' else '' }}>SSRF</option>
+                                    <option value="IDOR" {{ 'selected' if course and course.category == 'IDOR' else '' }}>IDOR</option>
+                                    <option value="Authentication" {{ 'selected' if course and course.category == 'Authentication' else '' }}>Authentication</option>
+                                    <option value="File Upload" {{ 'selected' if course and course.category == 'File Upload' else '' }}>File Upload</option>
+                                    <option value="Command Injection" {{ 'selected' if course and course.category == 'Command Injection' else '' }}>Command Injection</option>
+                                    <option value="Fundamentals" {{ 'selected' if course and course.category == 'Fundamentals' else '' }}>Fundamentals</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="difficulty" class="form-label">Difficulty</label>
+                                <select class="form-select" id="difficulty" name="difficulty" required>
+                                    <option value="beginner" {{ 'selected' if course and course.difficulty == 'beginner' else '' }}>Beginner</option>
+                                    <option value="intermediate" {{ 'selected' if course and course.difficulty == 'intermediate' else '' }}>Intermediate</option>
+                                    <option value="advanced" {{ 'selected' if course and course.difficulty == 'advanced' else '' }}>Advanced</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="duration_minutes" class="form-label">Duration (minutes)</label>
+                                <input type="number" class="form-control" id="duration_minutes" name="duration_minutes" 
+                                       value="{{ course.duration_minutes if course else 60 }}" min="1">
+                            </div>
+                            <div class="col-md-4">
+                                <label for="points" class="form-label">Points</label>
+                                <input type="number" class="form-control" id="points" name="points" 
+                                       value="{{ course.points if course else 100 }}" min="0">
+                            </div>
+                            <div class="col-md-4">
+                                <label for="order" class="form-label">Order</label>
+                                <input type="number" class="form-control" id="order" name="order" 
+                                       value="{{ course.order if course else 0 }}" min="0">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label d-block">&nbsp;</label>
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" id="is_published" name="is_published" 
+                                           {{ 'checked' if course and course.is_published else '' }}>
+                                    <label class="form-check-label" for="is_published">Published</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <hr class="my-4">
+
+                        <div class="d-flex justify-content-between">
+                            <a href="{{ url_for('admin.courses') }}" class="btn btn-outline-secondary">
+                                <i class="bi bi-arrow-left me-2"></i>Cancel
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-check-lg me-2"></i>{{ 'Update' if course else 'Create' }} Course
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

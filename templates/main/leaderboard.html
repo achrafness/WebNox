@@ -1,0 +1,114 @@
+{% extends "base.html" %}
+
+{% block title %}Leaderboard{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h1 class="fw-bold"><i class="bi bi-trophy text-warning me-2"></i>Leaderboard</h1>
+            <p class="text-muted">Top security learners ranked by points.</p>
+        </div>
+    </div>
+
+    <!-- Top 3 Podium -->
+    {% if users|length >= 3 %}
+    <div class="row mb-5">
+        <div class="col-md-4 text-center order-md-2">
+            <div class="card border-0 shadow position-relative" style="background: linear-gradient(135deg, #ffd700, #ffb300);">
+                <div class="card-body py-5">
+                    <div class="position-absolute top-0 start-50 translate-middle">
+                        <span class="badge bg-warning text-dark rounded-circle" style="width: 40px; height: 40px; line-height: 30px; font-size: 1.2rem;">1</span>
+                    </div>
+                    <i class="bi bi-person-circle display-3 text-dark opacity-75"></i>
+                    <h5 class="text-dark mt-2 mb-1">{{ users[0].username }}</h5>
+                    <h3 class="text-dark fw-bold">{{ users[0].total_score }}</h3>
+                    <small class="text-dark">points</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 text-center order-md-1 mt-4 mt-md-5">
+            <div class="card border-0 shadow" style="background: linear-gradient(135deg, #c0c0c0, #a8a8a8);">
+                <div class="card-body py-4">
+                    <div class="position-absolute top-0 start-50 translate-middle">
+                        <span class="badge bg-secondary rounded-circle" style="width: 35px; height: 35px; line-height: 25px;">2</span>
+                    </div>
+                    <i class="bi bi-person-circle display-4 text-dark opacity-75"></i>
+                    <h6 class="text-dark mt-2 mb-1">{{ users[1].username }}</h6>
+                    <h4 class="text-dark fw-bold">{{ users[1].total_score }}</h4>
+                    <small class="text-dark">points</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 text-center order-md-3 mt-4 mt-md-5">
+            <div class="card border-0 shadow" style="background: linear-gradient(135deg, #cd7f32, #b87333);">
+                <div class="card-body py-4">
+                    <div class="position-absolute top-0 start-50 translate-middle">
+                        <span class="badge rounded-circle" style="width: 35px; height: 35px; line-height: 25px; background: #cd7f32;">3</span>
+                    </div>
+                    <i class="bi bi-person-circle display-4 text-light opacity-75"></i>
+                    <h6 class="text-light mt-2 mb-1">{{ users[2].username }}</h6>
+                    <h4 class="text-light fw-bold">{{ users[2].total_score }}</h4>
+                    <small class="text-light">points</small>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Full Leaderboard Table -->
+    <div class="card border-0 shadow-sm">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th width="80">Rank</th>
+                            <th>User</th>
+                            <th class="text-end">Points</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for user in users %}
+                        <tr class="{{ 'table-primary' if current_user.is_authenticated and user.id == current_user.id else '' }}">
+                            <td>
+                                {% if user.rank == 1 %}
+                                    <span class="badge bg-warning text-dark">🥇 1</span>
+                                {% elif user.rank == 2 %}
+                                    <span class="badge bg-secondary">🥈 2</span>
+                                {% elif user.rank == 3 %}
+                                    <span class="badge" style="background: #cd7f32;">🥉 3</span>
+                                {% else %}
+                                    <span class="text-muted fw-bold">#{{ user.rank }}</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <i class="bi bi-person-circle me-2 text-muted" style="font-size: 1.5rem;"></i>
+                                    <div>
+                                        <strong>{{ user.username }}</strong>
+                                        {% if current_user.is_authenticated and user.id == current_user.id %}
+                                            <span class="badge bg-primary ms-2">You</span>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="text-end">
+                                <span class="badge bg-dark fs-6">{{ user.total_score }} pts</span>
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="3" class="text-center py-5">
+                                <i class="bi bi-trophy display-4 text-muted"></i>
+                                <p class="text-muted mt-2">No rankings yet. Be the first to earn points!</p>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

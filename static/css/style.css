@@ -1,0 +1,305 @@
+/* WebNoX - Web Security Training Platform CSS */
+
+:root {
+    --primary-color: #0d6efd;
+    --secondary-color: #6c757d;
+    --success-color: #198754;
+    --danger-color: #dc3545;
+    --warning-color: #ffc107;
+    --info-color: #0dcaf0;
+    --dark-color: #212529;
+    --light-color: #f8f9fa;
+}
+
+/* Typography */
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+}
+
+code, pre, .font-monospace {
+    font-family: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
+}
+
+/* Navigation */
+.navbar-brand {
+    font-weight: 700;
+    font-size: 1.5rem;
+}
+
+.navbar .nav-link {
+    font-weight: 500;
+    transition: color 0.2s ease;
+}
+
+/* Hero Section */
+.hero-section {
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    min-height: 400px;
+}
+
+/* Hero text color overrides (scoped to .hero-section) */
+.hero-section h1 {
+    color: #ffffff; /* main heading color */
+}
+
+.hero-section .text-primary {
+    /* Use a brighter/cool accent for highlighted words inside the hero */
+    color: var(--info-color) !important;
+}
+
+.hero-section p.lead,
+.hero-section .text-muted {
+    /* Lighter muted text so it reads on the dark gradient */
+    color: rgba(255, 255, 255, 0.8) !important;
+}
+
+.hero-section .btn-outline-light {
+    color: #f8f9fa;
+    border-color: rgba(248,249,250,0.15);
+}
+
+.hero-section .bi-shield-lock {
+    color: var(--info-color);
+}
+
+/* Cards */
+.card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    border-radius: 0.75rem;
+}
+
+.course-card:hover,
+.lab-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+}
+
+.card-header {
+    border-radius: 0.75rem 0.75rem 0 0 !important;
+}
+
+/* Badges */
+.badge {
+    font-weight: 500;
+}
+
+/* Buttons */
+.btn {
+    font-weight: 500;
+    border-radius: 0.5rem;
+    transition: all 0.2s ease;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #0d6efd 0%, #0b5ed7 100%);
+    border: none;
+}
+
+.btn-primary:hover {
+    background: linear-gradient(135deg, #0b5ed7 0%, #0a58ca 100%);
+    transform: translateY(-1px);
+}
+
+/* Progress bars */
+.progress {
+    border-radius: 1rem;
+    overflow: hidden;
+}
+
+.progress-bar {
+    background: linear-gradient(90deg, #0d6efd 0%, #198754 100%);
+}
+
+/* Tables */
+.table th {
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 0.05em;
+    color: #6c757d;
+}
+
+/* Alerts */
+.alert {
+    border: none;
+    border-radius: 0.75rem;
+}
+
+/* Forms */
+.form-control, .form-select {
+    border-radius: 0.5rem;
+    padding: 0.75rem 1rem;
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: #0d6efd;
+    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.15);
+}
+
+.input-group-text {
+    border-radius: 0.5rem 0 0 0.5rem;
+    background: #f8f9fa;
+}
+
+/* Leaderboard */
+.podium-card {
+    transition: transform 0.3s ease;
+}
+
+.podium-card:hover {
+    transform: scale(1.02);
+}
+
+/* Lab detail */
+.flag-input {
+    font-size: 1.1rem;
+    letter-spacing: 0.1em;
+}
+
+/* Lesson content */
+.lesson-content h2 {
+    color: #0d6efd;
+    border-bottom: 2px solid #e9ecef;
+    padding-bottom: 0.5rem;
+}
+
+.lesson-content h3 {
+    color: #495057;
+}
+
+.lesson-content ul, .lesson-content ol {
+    padding-left: 1.5rem;
+}
+
+.lesson-content li {
+    margin-bottom: 0.5rem;
+}
+
+.lesson-content blockquote {
+    border-left: 4px solid #0d6efd;
+    padding-left: 1rem;
+    margin: 1rem 0;
+    background: #f8f9fa;
+    padding: 1rem;
+    border-radius: 0 0.5rem 0.5rem 0;
+}
+
+/* Admin sidebar */
+.list-group-item-action.active {
+    background-color: #0d6efd;
+    border-color: #0d6efd;
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.fade-in {
+    animation: fadeIn 0.3s ease;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #a1a1a1;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .hero-section h1 {
+        font-size: 2rem;
+    }
+    
+    .btn-group {
+        flex-direction: column;
+        width: 100%;
+    }
+    
+    .btn-group .btn {
+        border-radius: 0.5rem !important;
+        margin-bottom: 0.5rem;
+    }
+}
+
+/* Dark mode support (optional) */
+@media (prefers-color-scheme: dark) {
+    /* Add dark mode styles if needed */
+}
+
+/* Loading spinner */
+.spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #0d6efd;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Tooltip customization */
+.tooltip-inner {
+    max-width: 300px;
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+}
+
+/* Code blocks in lessons */
+pre {
+    position: relative;
+}
+
+pre code {
+    display: block;
+    padding: 1rem;
+    overflow-x: auto;
+}
+
+/* Terminal-like styling for code */
+.terminal-output {
+    background: #1e1e1e;
+    color: #4ec9b0;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    font-family: 'JetBrains Mono', monospace;
+}
+
+/* Completed lab styling */
+.lab-completed {
+    position: relative;
+}
+
+.lab-completed::after {
+    content: '✓';
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 30px;
+    height: 30px;
+    background: #198754;
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+}

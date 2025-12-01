@@ -1,0 +1,194 @@
+{% extends "base.html" %}
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section bg-dark text-light py-5">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6">
+                <h1 class="display-4 fw-bold mb-3">
+                    Master <span class="text-primary">Web Security</span>
+                </h1>
+                <p class="lead text-muted mb-4">
+                    Learn web application security through interactive courses and hands-on labs. 
+                    Practice real-world vulnerabilities in a safe, gamified environment.
+                </p>
+                <div class="d-flex gap-3">
+                    {% if current_user.is_authenticated %}
+                        <a href="{{ url_for('main.dashboard') }}" class="btn btn-primary btn-lg">
+                            <i class="bi bi-speedometer2 me-2"></i>Go to Dashboard
+                        </a>
+                    {% else %}
+                        <a href="{{ url_for('auth.register') }}" class="btn btn-primary btn-lg">
+                            <i class="bi bi-rocket-takeoff me-2"></i>Get Started
+                        </a>
+                        <a href="{{ url_for('auth.login') }}" class="btn btn-outline-light btn-lg">
+                            <i class="bi bi-box-arrow-in-right me-2"></i>Login
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="col-lg-6 text-center d-none d-lg-block">
+                <i class="bi bi-shield-lock display-1 text-primary" style="font-size: 12rem; opacity: 0.3;"></i>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Stats Section -->
+<section class="py-4 bg-primary text-light">
+    <div class="container">
+        <div class="row text-center">
+            <div class="col-md-4">
+                <h2 class="fw-bold mb-0">{{ total_users }}</h2>
+                <p class="mb-0"><i class="bi bi-people me-1"></i>Students</p>
+            </div>
+            <div class="col-md-4">
+                <h2 class="fw-bold mb-0">{{ total_courses }}</h2>
+                <p class="mb-0"><i class="bi bi-book me-1"></i>Courses</p>
+            </div>
+            <div class="col-md-4">
+                <h2 class="fw-bold mb-0">{{ total_labs }}</h2>
+                <p class="mb-0"><i class="bi bi-terminal me-1"></i>Labs</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Featured Courses -->
+<section class="py-5">
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="fw-bold mb-0"><i class="bi bi-book text-primary me-2"></i>Featured Courses</h2>
+            <a href="{{ url_for('courses.list_courses') }}" class="btn btn-outline-primary">View All</a>
+        </div>
+        <div class="row g-4">
+            {% for course in courses %}
+            <div class="col-md-6 col-lg-4">
+                <div class="card h-100 border-0 shadow-sm course-card">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between mb-2">
+                            <span class="badge bg-{{ 'success' if course.difficulty == 'beginner' else 'warning' if course.difficulty == 'intermediate' else 'danger' }}">
+                                {{ course.difficulty | title }}
+                            </span>
+                            <span class="badge bg-primary">{{ course.points }} pts</span>
+                        </div>
+                        <h5 class="card-title">{{ course.title }}</h5>
+                        <p class="card-text text-muted small">{{ course.description[:100] }}...</p>
+                        <div class="d-flex justify-content-between align-items-center mt-3">
+                            <small class="text-muted">
+                                <i class="bi bi-clock me-1"></i>{{ course.duration_minutes }} min
+                            </small>
+                            <a href="{{ url_for('courses.course_detail', slug=course.slug) }}" class="btn btn-sm btn-outline-primary">
+                                Learn More
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% else %}
+            <div class="col-12 text-center py-5">
+                <i class="bi bi-book display-4 text-muted"></i>
+                <p class="text-muted mt-3">No courses available yet. Check back soon!</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- Featured Labs -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="fw-bold mb-0"><i class="bi bi-terminal text-primary me-2"></i>Featured Labs</h2>
+            <a href="{{ url_for('labs.list_labs') }}" class="btn btn-outline-primary">View All</a>
+        </div>
+        <div class="row g-4">
+            {% for lab in labs %}
+            <div class="col-md-6 col-lg-4">
+                <div class="card h-100 border-0 shadow-sm lab-card">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between mb-2">
+                            <span class="badge bg-{{ 'success' if lab.difficulty == 'beginner' else 'warning' if lab.difficulty == 'intermediate' else 'danger' }}">
+                                {{ lab.difficulty | title }}
+                            </span>
+                            <span class="badge bg-info">{{ lab.category }}</span>
+                        </div>
+                        <h5 class="card-title">{{ lab.title }}</h5>
+                        <p class="card-text text-muted small">{{ lab.description[:100] }}...</p>
+                        <div class="d-flex justify-content-between align-items-center mt-3">
+                            <span class="badge bg-dark">
+                                <i class="bi bi-flag me-1"></i>{{ lab.points }} pts
+                            </span>
+                            <a href="{{ url_for('labs.lab_detail', slug=lab.slug) }}" class="btn btn-sm btn-outline-primary">
+                                Start Lab
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% else %}
+            <div class="col-12 text-center py-5">
+                <i class="bi bi-terminal display-4 text-muted"></i>
+                <p class="text-muted mt-3">No labs available yet. Check back soon!</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section class="py-5">
+    <div class="container">
+        <h2 class="text-center fw-bold mb-5">Why Choose WebNoX?</h2>
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="text-center">
+                    <div class="bg-primary bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                        <i class="bi bi-book text-primary" style="font-size: 2rem;"></i>
+                    </div>
+                    <h5>Structured Learning</h5>
+                    <p class="text-muted">Comprehensive courses covering all major web security vulnerabilities from basics to advanced.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="text-center">
+                    <div class="bg-primary bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                        <i class="bi bi-terminal text-primary" style="font-size: 2rem;"></i>
+                    </div>
+                    <h5>Hands-on Labs</h5>
+                    <p class="text-muted">Practice real vulnerabilities in safe, isolated environments with CTF-style challenges.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="text-center">
+                    <div class="bg-primary bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                        <i class="bi bi-trophy text-primary" style="font-size: 2rem;"></i>
+                    </div>
+                    <h5>Gamified Progress</h5>
+                    <p class="text-muted">Earn points, climb the leaderboard, and track your security learning journey.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section class="py-5 bg-primary text-light">
+    <div class="container text-center">
+        <h2 class="fw-bold mb-3">Ready to Start Your Security Journey?</h2>
+        <p class="lead mb-4">Join thousands of students learning web application security.</p>
+        {% if not current_user.is_authenticated %}
+        <a href="{{ url_for('auth.register') }}" class="btn btn-light btn-lg">
+            <i class="bi bi-rocket-takeoff me-2"></i>Start Learning Now
+        </a>
+        {% else %}
+        <a href="{{ url_for('courses.list_courses') }}" class="btn btn-light btn-lg">
+            <i class="bi bi-play-circle me-2"></i>Continue Learning
+        </a>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

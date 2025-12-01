@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+
+{% block title %}Courses{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <h1 class="fw-bold"><i class="bi bi-book text-primary me-2"></i>Courses</h1>
+            <p class="text-muted">Master web security through structured learning paths.</p>
+        </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="btn-group flex-wrap" role="group">
+                <button type="button" class="btn btn-outline-primary active" data-filter="all">All</button>
+                {% for category in categories %}
+                <button type="button" class="btn btn-outline-primary" data-filter="{{ category }}">{{ category }}</button>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Courses Grid -->
+    <div class="row g-4" id="courses-grid">
+        {% for course in courses %}
+        <div class="col-md-6 col-lg-4 course-item" data-category="{{ course.category }}">
+            <div class="card h-100 border-0 shadow-sm course-card">
+                <div class="card-header bg-dark text-light py-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="badge bg-{{ 'success' if course.difficulty == 'beginner' else 'warning' if course.difficulty == 'intermediate' else 'danger' }}">
+                            {{ course.difficulty | title }}
+                        </span>
+                        <span class="badge bg-primary">{{ course.category }}</span>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <h5 class="card-title">{{ course.title }}</h5>
+                    <p class="card-text text-muted small">{{ course.description[:150] }}...</p>
+                    
+                    <div class="d-flex justify-content-between align-items-center mt-3 mb-3">
+                        <small class="text-muted">
+                            <i class="bi bi-clock me-1"></i>{{ course.duration_minutes }} min
+                        </small>
+                        <small class="text-muted">
+                            <i class="bi bi-journal-text me-1"></i>{{ course.get_total_lessons() }} lessons
+                        </small>
+                        <span class="badge bg-dark">
+                            <i class="bi bi-star me-1"></i>{{ course.points }} pts
+                        </span>
+                    </div>
+                </div>
+                <div class="card-footer bg-transparent border-0">
+                    <a href="{{ url_for('courses.course_detail', slug=course.slug) }}" class="btn btn-primary w-100">
+                        <i class="bi bi-play-circle me-2"></i>Start Learning
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <div class="col-12 text-center py-5">
+            <i class="bi bi-book display-1 text-muted"></i>
+            <h4 class="mt-4 text-muted">No courses available yet</h4>
+            <p class="text-muted">Check back soon for new content!</p>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.querySelectorAll('[data-filter]').forEach(btn => {
+    btn.addEventListener('click', function() {
+        // Update active state
+        document.querySelectorAll('[data-filter]').forEach(b => b.classList.remove('active'));
+        this.classList.add('active');
+        
+        const filter = this.dataset.filter;
+        
+        document.querySelectorAll('.course-item').forEach(item => {
+            if (filter === 'all' || item.dataset.category === filter) {
+                item.style.display = 'block';
+            } else {
+                item.style.display = 'none';
+            }
+        });
+    });
+});
+</script>
+{% endblock %}

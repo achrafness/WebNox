@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+
+{% block title %}{{ 'Edit' if lesson else 'New' }} Lesson{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{{ url_for('admin.dashboard') }}">Admin</a></li>
+                    <li class="breadcrumb-item"><a href="{{ url_for('admin.courses') }}">Courses</a></li>
+                    <li class="breadcrumb-item"><a href="{{ url_for('admin.lessons', course_id=course.id) }}">{{ course.title }}</a></li>
+                    <li class="breadcrumb-item active">{{ 'Edit' if lesson else 'New' }} Lesson</li>
+                </ol>
+            </nav>
+
+            <h2 class="fw-bold mb-4">
+                <i class="bi bi-{{ 'pencil' if lesson else 'plus-circle' }} text-primary me-2"></i>
+                {{ 'Edit Lesson' if lesson else 'Create New Lesson' }}
+            </h2>
+
+            <div class="card border-0 shadow-sm">
+                <div class="card-body p-4">
+                    <form method="POST">
+                        <div class="row g-3">
+                            <div class="col-md-8">
+                                <label for="title" class="form-label">Title</label>
+                                <input type="text" class="form-control" id="title" name="title" 
+                                       value="{{ lesson.title if lesson else '' }}" required>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="slug" class="form-label">Slug</label>
+                                <input type="text" class="form-control" id="slug" name="slug" 
+                                       value="{{ lesson.slug if lesson else '' }}" required
+                                       placeholder="e.g., introduction">
+                            </div>
+                            <div class="col-12">
+                                <label for="content" class="form-label">Content (HTML/Markdown)</label>
+                                <textarea class="form-control" id="content" name="content" rows="15" required>{{ lesson.content if lesson else '' }}</textarea>
+                                <div class="form-text">You can use HTML or Markdown formatting</div>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="duration_minutes" class="form-label">Duration (minutes)</label>
+                                <input type="number" class="form-control" id="duration_minutes" name="duration_minutes" 
+                                       value="{{ lesson.duration_minutes if lesson else 15 }}" min="1">
+                            </div>
+                            <div class="col-md-4">
+                                <label for="order" class="form-label">Order</label>
+                                <input type="number" class="form-control" id="order" name="order" 
+                                       value="{{ lesson.order if lesson else 0 }}" min="0">
+                            </div>
+                            <div class="col-md-4">
+                                <label for="video_url" class="form-label">Video URL (optional)</label>
+                                <input type="url" class="form-control" id="video_url" name="video_url" 
+                                       value="{{ lesson.video_url if lesson else '' }}"
+                                       placeholder="https://youtube.com/embed/...">
+                            </div>
+                        </div>
+
+                        <hr class="my-4">
+
+                        <div class="d-flex justify-content-between">
+                            <a href="{{ url_for('admin.lessons', course_id=course.id) }}" class="btn btn-outline-secondary">
+                                <i class="bi bi-arrow-left me-2"></i>Cancel
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-check-lg me-2"></i>{{ 'Update' if lesson else 'Create' }} Lesson
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

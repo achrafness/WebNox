@@ -1,0 +1,171 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- Welcome Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card bg-primary text-light border-0">
+                <div class="card-body p-4">
+                    <div class="row align-items-center">
+                        <div class="col-md-8">
+                            <h2 class="mb-1">Welcome back, {{ current_user.username }}! 👋</h2>
+                            <p class="mb-0 opacity-75">Continue your security learning journey.</p>
+                        </div>
+                        <div class="col-md-4 text-end">
+                            <div class="display-6 fw-bold">{{ current_user.total_score }}</div>
+                            <small>Total Points</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="row g-4 mb-4">
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body text-center">
+                    <i class="bi bi-trophy text-warning display-5 mb-2"></i>
+                    <h3 class="mb-0">#{{ current_user.rank }}</h3>
+                    <p class="text-muted mb-0">Your Rank</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body text-center">
+                    <i class="bi bi-book text-primary display-5 mb-2"></i>
+                    <h3 class="mb-0">{{ completed_courses }}</h3>
+                    <p class="text-muted mb-0">Courses Completed</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body text-center">
+                    <i class="bi bi-terminal text-success display-5 mb-2"></i>
+                    <h3 class="mb-0">{{ completed_labs }}</h3>
+                    <p class="text-muted mb-0">Labs Completed</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body text-center">
+                    <i class="bi bi-star text-info display-5 mb-2"></i>
+                    <h3 class="mb-0">{{ current_user.total_score }}</h3>
+                    <p class="text-muted mb-0">Total Points</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <!-- Recent Activity -->
+        <div class="col-lg-6">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-header bg-transparent border-0">
+                    <h5 class="mb-0"><i class="bi bi-clock-history text-primary me-2"></i>Recent Activity</h5>
+                </div>
+                <div class="card-body">
+                    {% if recent_progress %}
+                        <div class="list-group list-group-flush">
+                            {% for progress in recent_progress %}
+                            <div class="list-group-item border-0 px-0">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <span class="badge bg-{{ 'primary' if progress.progress_type == 'course' else 'success' if progress.progress_type == 'lab' else 'info' }} me-2">
+                                            {{ progress.progress_type | title }}
+                                        </span>
+                                        <span class="badge bg-{{ 'success' if progress.status == 'completed' else 'warning' }}">
+                                            {{ progress.status | title }}
+                                        </span>
+                                    </div>
+                                    <small class="text-muted">{{ progress.started_at.strftime('%b %d') }}</small>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="text-center py-4">
+                            <i class="bi bi-activity display-4 text-muted"></i>
+                            <p class="text-muted mt-2">No recent activity. Start learning!</p>
+                            <a href="{{ url_for('courses.list_courses') }}" class="btn btn-primary btn-sm">Browse Courses</a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Points -->
+        <div class="col-lg-6">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-header bg-transparent border-0">
+                    <h5 class="mb-0"><i class="bi bi-star text-warning me-2"></i>Recent Points</h5>
+                </div>
+                <div class="card-body">
+                    {% if recent_scores %}
+                        <div class="list-group list-group-flush">
+                            {% for score in recent_scores %}
+                            <div class="list-group-item border-0 px-0 d-flex justify-content-between align-items-center">
+                                <div>
+                                    <p class="mb-0 small">{{ score.description }}</p>
+                                    <small class="text-muted">{{ score.earned_at.strftime('%b %d, %Y') }}</small>
+                                </div>
+                                <span class="badge bg-success">+{{ score.points }}</span>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="text-center py-4">
+                            <i class="bi bi-star display-4 text-muted"></i>
+                            <p class="text-muted mt-2">No points earned yet. Complete labs to earn points!</p>
+                            <a href="{{ url_for('labs.list_labs') }}" class="btn btn-primary btn-sm">Browse Labs</a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recommended Courses -->
+    {% if recommended_courses %}
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-transparent border-0">
+                    <h5 class="mb-0"><i class="bi bi-lightbulb text-warning me-2"></i>Recommended for You</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row g-4">
+                        {% for course in recommended_courses %}
+                        <div class="col-md-4">
+                            <div class="card h-100 border">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between mb-2">
+                                        <span class="badge bg-{{ 'success' if course.difficulty == 'beginner' else 'warning' if course.difficulty == 'intermediate' else 'danger' }}">
+                                            {{ course.difficulty | title }}
+                                        </span>
+                                        <span class="badge bg-primary">{{ course.points }} pts</span>
+                                    </div>
+                                    <h6 class="card-title">{{ course.title }}</h6>
+                                    <p class="card-text text-muted small">{{ course.description[:80] }}...</p>
+                                    <a href="{{ url_for('courses.course_detail', slug=course.slug) }}" class="btn btn-sm btn-outline-primary">
+                                        Start Course
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

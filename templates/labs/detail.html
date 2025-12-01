@@ -1,0 +1,274 @@
+{% extends "base.html" %}
+
+{% block title %}{{ lab.title }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    .lab-instructions {
+        font-size: 1.05rem;
+        line-height: 1.8;
+    }
+    .lab-instructions pre {
+        background: #1e1e1e;
+        color: #d4d4d4;
+        padding: 1rem;
+        border-radius: 0.5rem;
+        overflow-x: auto;
+    }
+    .lab-instructions code {
+        background: #f4f4f4;
+        padding: 0.2rem 0.4rem;
+        border-radius: 0.25rem;
+        font-family: 'JetBrains Mono', monospace;
+    }
+    .lab-instructions pre code {
+        background: transparent;
+        padding: 0;
+    }
+    .flag-input {
+        font-family: 'JetBrains Mono', monospace;
+        letter-spacing: 0.05em;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-lg-8">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{{ url_for('labs.list_labs') }}">Labs</a></li>
+                    <li class="breadcrumb-item active">{{ lab.title }}</li>
+                </ol>
+            </nav>
+            
+            <div class="d-flex flex-wrap align-items-center gap-2 mb-3">
+                <span class="badge bg-{{ 'success' if lab.difficulty == 'beginner' else 'warning' if lab.difficulty == 'intermediate' else 'danger' }}">
+                    {{ lab.difficulty | title }}
+                </span>
+                <span class="badge bg-info">{{ lab.vulnerability_type }}</span>
+                <span class="badge bg-primary">{{ lab.category }}</span>
+                {% if submission and submission.is_correct %}
+                    <span class="badge bg-success"><i class="bi bi-check-circle me-1"></i>Completed</span>
+                {% endif %}
+            </div>
+            
+            <h1 class="fw-bold">{{ lab.title }}</h1>
+            <p class="lead text-muted">{{ lab.description }}</p>
+        </div>
+        
+        <div class="col-lg-4">
+            <div class="card border-0 shadow-sm {{ 'border-success' if submission and submission.is_correct else '' }}" 
+                 style="{{ 'border: 2px solid;' if submission and submission.is_correct else '' }}">
+                <div class="card-body text-center p-4">
+                    <div class="row mb-3">
+                        <div class="col-6">
+                            <h3 class="mb-0 text-primary">{{ lab.points }}</h3>
+                            <small class="text-muted">Points</small>
+                        </div>
+                        <div class="col-6">
+                            <h3 class="mb-0">{{ lab.get_completion_count() }}</h3>
+                            <small class="text-muted">Solvers</small>
+                        </div>
+                    </div>
+                    
+                    {% if submission %}
+                        <div class="alert alert-{{ 'success' if submission.is_correct else 'info' }} py-2 mb-3">
+                            <small>
+                                <strong>Attempts:</strong> {{ submission.attempts }}
+                                {% if submission.is_correct %}
+                                    <br><i class="bi bi-check-circle"></i> Completed {{ submission.completed_at.strftime('%b %d, %Y') }}
+                                {% endif %}
+                            </small>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Main Content -->
+        <div class="col-lg-8">
+            <!-- Instructions -->
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-dark text-light">
+                    <h5 class="mb-0"><i class="bi bi-journal-text me-2"></i>Instructions</h5>
+                </div>
+                <div class="card-body p-4 lab-instructions">
+                    {{ lab.instructions | safe }}
+                </div>
+            </div>
+
+            <!-- Lab Environment -->
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-dark text-light d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0"><i class="bi bi-box me-2"></i>Lab Environment</h5>
+                    <span id="instance-status" class="badge bg-secondary">Checking...</span>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted mb-3">
+                        This lab runs in your own isolated container environment.
+                    </p>
+                    
+                    <!-- Instance Info (shown when running) -->
+                    <div id="instance-running" class="d-none">
+                        <div class="alert alert-success mb-3">
+                            <i class="bi bi-check-circle me-2"></i>
+                            <strong>Lab is running!</strong>
+                        </div>
+                        <div class="card bg-light mb-3">
+                            <div class="card-body">
+                                <p class="mb-2"><strong>Access your lab at:</strong></p>
+                                <a href="#" id="lab-url" target="_blank" class="btn btn-outline-primary w-100 mb-2">
+                                    <i class="bi bi-box-arrow-up-right me-2"></i>
+                                    <span id="lab-url-text">Loading...</span>
+                                </a>
+                                <small class="text-muted d-block mt-2">
+                                    <i class="bi bi-clock me-1"></i>
+                                    Expires: <span id="lab-expires">--</span>
+                                </small>
+                            </div>
+                        </div>
+                        <form method="POST" action="{{ url_for('labs.stop_lab', slug=lab.slug) }}" class="d-inline">
+                            <button type="submit" class="btn btn-danger">
+                                <i class="bi bi-stop-circle me-2"></i>Stop Lab
+                            </button>
+                        </form>
+                    </div>
+                    
+                    <!-- Start Button (shown when not running) -->
+                    <div id="instance-stopped">
+                        <div class="alert alert-info mb-3">
+                            <i class="bi bi-info-circle me-2"></i>
+                            Start your own isolated lab environment. Each user gets their own instance.
+                        </div>
+                        <form method="POST" action="{{ url_for('labs.start_lab', slug=lab.slug) }}">
+                            <button type="submit" class="btn btn-success btn-lg" id="startLabBtn">
+                                <i class="bi bi-play-circle me-2"></i>Start Lab Environment
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="col-lg-4">
+            <!-- Flag Submission -->
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-primary text-light">
+                    <h5 class="mb-0"><i class="bi bi-flag me-2"></i>Submit Flag</h5>
+                </div>
+                <div class="card-body">
+                    {% if submission and submission.is_correct %}
+                        <div class="text-center py-3">
+                            <i class="bi bi-trophy text-warning display-4"></i>
+                            <h5 class="mt-3 text-success">Congratulations!</h5>
+                            <p class="text-muted">You've captured the flag!</p>
+                            <span class="badge bg-success fs-6">+{{ lab.points }} points</span>
+                        </div>
+                    {% else %}
+                        <form method="POST" action="{{ url_for('labs.submit_flag', slug=lab.slug) }}">
+                            <div class="mb-3">
+                                <label for="flag" class="form-label">Enter the flag:</label>
+                                <input type="text" class="form-control flag-input" id="flag" name="flag" 
+                                       placeholder="FLAG{...}" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary w-100">
+                                <i class="bi bi-send me-2"></i>Submit Flag
+                            </button>
+                        </form>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Hints -->
+            {% if lab.hints %}
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-warning text-dark">
+                    <h5 class="mb-0"><i class="bi bi-lightbulb me-2"></i>Hints</h5>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted small mb-3">Click to reveal hints (use sparingly!)</p>
+                    <div id="hints-container">
+                        {% for i in range(1, (lab.hints | from_json | default([]) | length) + 1) %}
+                        <div class="mb-2">
+                            <button class="btn btn-outline-warning btn-sm w-100" onclick="revealHint({{ i }})">
+                                <i class="bi bi-eye me-1"></i>Reveal Hint {{ i }}
+                            </button>
+                            <div id="hint-{{ i }}" class="alert alert-warning mt-2 d-none small"></div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function revealHint(hintNum) {
+    fetch(`{{ url_for('labs.get_hint', slug=lab.slug, hint_num=1) }}`.replace('1', hintNum))
+        .then(response => response.json())
+        .then(data => {
+            if (data.hint) {
+                const hintDiv = document.getElementById(`hint-${hintNum}`);
+                hintDiv.textContent = data.hint;
+                hintDiv.classList.remove('d-none');
+            }
+        })
+        .catch(error => console.error('Error fetching hint:', error));
+}
+
+// Check lab status on page load
+function checkLabStatus() {
+    fetch('{{ url_for("labs.lab_status", slug=lab.slug) }}')
+        .then(response => response.json())
+        .then(data => {
+            const statusBadge = document.getElementById('instance-status');
+            const runningDiv = document.getElementById('instance-running');
+            const stoppedDiv = document.getElementById('instance-stopped');
+            const labUrl = document.getElementById('lab-url');
+            const labUrlText = document.getElementById('lab-url-text');
+            const labExpires = document.getElementById('lab-expires');
+            
+            if (data.running) {
+                statusBadge.textContent = 'Running';
+                statusBadge.className = 'badge bg-success';
+                runningDiv.classList.remove('d-none');
+                stoppedDiv.classList.add('d-none');
+                
+                labUrl.href = data.url;
+                labUrlText.textContent = data.url;
+                
+                if (data.expires_at) {
+                    const expires = new Date(data.expires_at);
+                    labExpires.textContent = expires.toLocaleString();
+                }
+            } else {
+                statusBadge.textContent = 'Stopped';
+                statusBadge.className = 'badge bg-secondary';
+                runningDiv.classList.add('d-none');
+                stoppedDiv.classList.remove('d-none');
+            }
+        })
+        .catch(error => {
+            console.error('Error checking lab status:', error);
+            document.getElementById('instance-status').textContent = 'Error';
+            document.getElementById('instance-status').className = 'badge bg-danger';
+        });
+}
+
+// Check status on load and every 30 seconds
+document.addEventListener('DOMContentLoaded', () => {
+    checkLabStatus();
+    setInterval(checkLabStatus, 30000);
+});
+</script>
+{% endblock %}

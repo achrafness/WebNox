@@ -1,0 +1,152 @@
+{% extends "base.html" %}
+
+{% block title %}{{ 'Edit' if lab else 'New' }} Lab{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{{ url_for('admin.dashboard') }}">Admin</a></li>
+                    <li class="breadcrumb-item"><a href="{{ url_for('admin.labs') }}">Labs</a></li>
+                    <li class="breadcrumb-item active">{{ 'Edit' if lab else 'New' }}</li>
+                </ol>
+            </nav>
+
+            <h2 class="fw-bold mb-4">
+                <i class="bi bi-{{ 'pencil' if lab else 'plus-circle' }} text-primary me-2"></i>
+                {{ 'Edit Lab' if lab else 'Create New Lab' }}
+            </h2>
+
+            <div class="card border-0 shadow-sm">
+                <div class="card-body p-4">
+                    <form method="POST">
+                        <div class="row g-3">
+                            <div class="col-md-8">
+                                <label for="title" class="form-label">Title</label>
+                                <input type="text" class="form-control" id="title" name="title" 
+                                       value="{{ lab.title if lab else '' }}" required>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="slug" class="form-label">Slug</label>
+                                <input type="text" class="form-control" id="slug" name="slug" 
+                                       value="{{ lab.slug if lab else '' }}" required
+                                       placeholder="e.g., xss-reflected-basic">
+                            </div>
+                            <div class="col-12">
+                                <label for="description" class="form-label">Description</label>
+                                <textarea class="form-control" id="description" name="description" rows="2" required>{{ lab.description if lab else '' }}</textarea>
+                            </div>
+                            <div class="col-12">
+                                <label for="instructions" class="form-label">Instructions (HTML)</label>
+                                <textarea class="form-control" id="instructions" name="instructions" rows="10" required>{{ lab.instructions if lab else '' }}</textarea>
+                                <div class="form-text">Write detailed instructions using HTML formatting</div>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="category" class="form-label">Category</label>
+                                <select class="form-select" id="category" name="category" required>
+                                    <option value="">Select...</option>
+                                    <option value="Web Security" {{ 'selected' if lab and lab.category == 'Web Security' else '' }}>Web Security</option>
+                                    <option value="XSS" {{ 'selected' if lab and lab.category == 'XSS' else '' }}>XSS</option>
+                                    <option value="SQL Injection" {{ 'selected' if lab and lab.category == 'SQL Injection' else '' }}>SQL Injection</option>
+                                    <option value="CSRF" {{ 'selected' if lab and lab.category == 'CSRF' else '' }}>CSRF</option>
+                                    <option value="SSRF" {{ 'selected' if lab and lab.category == 'SSRF' else '' }}>SSRF</option>
+                                    <option value="Authentication" {{ 'selected' if lab and lab.category == 'Authentication' else '' }}>Authentication</option>
+                                    <option value="IDOR" {{ 'selected' if lab and lab.category == 'IDOR' else '' }}>IDOR</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="vulnerability_type" class="form-label">Vulnerability Type</label>
+                                <select class="form-select" id="vulnerability_type" name="vulnerability_type" required>
+                                    <option value="">Select...</option>
+                                    <option value="Reflected XSS" {{ 'selected' if lab and lab.vulnerability_type == 'Reflected XSS' else '' }}>Reflected XSS</option>
+                                    <option value="Stored XSS" {{ 'selected' if lab and lab.vulnerability_type == 'Stored XSS' else '' }}>Stored XSS</option>
+                                    <option value="DOM XSS" {{ 'selected' if lab and lab.vulnerability_type == 'DOM XSS' else '' }}>DOM XSS</option>
+                                    <option value="SQL Injection" {{ 'selected' if lab and lab.vulnerability_type == 'SQL Injection' else '' }}>SQL Injection</option>
+                                    <option value="Blind SQLi" {{ 'selected' if lab and lab.vulnerability_type == 'Blind SQLi' else '' }}>Blind SQLi</option>
+                                    <option value="CSRF" {{ 'selected' if lab and lab.vulnerability_type == 'CSRF' else '' }}>CSRF</option>
+                                    <option value="SSRF" {{ 'selected' if lab and lab.vulnerability_type == 'SSRF' else '' }}>SSRF</option>
+                                    <option value="IDOR" {{ 'selected' if lab and lab.vulnerability_type == 'IDOR' else '' }}>IDOR</option>
+                                    <option value="Auth Bypass" {{ 'selected' if lab and lab.vulnerability_type == 'Auth Bypass' else '' }}>Auth Bypass</option>
+                                    <option value="Command Injection" {{ 'selected' if lab and lab.vulnerability_type == 'Command Injection' else '' }}>Command Injection</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="difficulty" class="form-label">Difficulty</label>
+                                <select class="form-select" id="difficulty" name="difficulty" required>
+                                    <option value="beginner" {{ 'selected' if lab and lab.difficulty == 'beginner' else '' }}>Beginner</option>
+                                    <option value="intermediate" {{ 'selected' if lab and lab.difficulty == 'intermediate' else '' }}>Intermediate</option>
+                                    <option value="advanced" {{ 'selected' if lab and lab.difficulty == 'advanced' else '' }}>Advanced</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="points" class="form-label">Points</label>
+                                <input type="number" class="form-control" id="points" name="points" 
+                                       value="{{ lab.points if lab else 50 }}" min="0" required>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="flag" class="form-label">Flag</label>
+                                <input type="text" class="form-control font-monospace" id="flag" name="flag" 
+                                       value="{{ lab.flag if lab else '' }}" required
+                                       placeholder="FLAG{...}">
+                            </div>
+                            <div class="col-md-4">
+                                <label for="order" class="form-label">Order</label>
+                                <input type="number" class="form-control" id="order" name="order" 
+                                       value="{{ lab.order if lab else 0 }}" min="0">
+                            </div>
+                            <div class="col-12">
+                                <label for="hints" class="form-label">Hints (JSON array)</label>
+                                <textarea class="form-control font-monospace" id="hints" name="hints" rows="3" 
+                                          placeholder='["First hint here", "Second hint here"]'>{{ lab.hints if lab else '' }}</textarea>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="docker_image" class="form-label">Docker Image (optional)</label>
+                                <input type="text" class="form-control" id="docker_image" name="docker_image" 
+                                       value="{{ lab.docker_image if lab else '' }}"
+                                       placeholder="webnox/xss-lab:latest">
+                            </div>
+                            <div class="col-md-4">
+                                <label for="docker_port" class="form-label">Docker Port</label>
+                                <input type="number" class="form-control" id="docker_port" name="docker_port" 
+                                       value="{{ lab.docker_port if lab else 8080 }}" min="1">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label d-block">&nbsp;</label>
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" id="is_active" name="is_active" 
+                                           {{ 'checked' if lab and lab.is_active else 'checked' if not lab else '' }}>
+                                    <label class="form-check-label" for="is_active">Active</label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="course_id" class="form-label">Associated Course (optional)</label>
+                                <select class="form-select" id="course_id" name="course_id">
+                                    <option value="">None</option>
+                                    {% for course in courses %}
+                                    <option value="{{ course.id }}" {{ 'selected' if lab and lab.course_id == course.id else '' }}>
+                                        {{ course.title }}
+                                    </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+
+                        <hr class="my-4">
+
+                        <div class="d-flex justify-content-between">
+                            <a href="{{ url_for('admin.labs') }}" class="btn btn-outline-secondary">
+                                <i class="bi bi-arrow-left me-2"></i>Cancel
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-check-lg me-2"></i>{{ 'Update' if lab else 'Create' }} Lab
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,164 @@
+{% extends "base.html" %}
+
+{% block title %}About{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <!-- Header -->
+    <div class="row mb-5">
+        <div class="col-lg-8 mx-auto text-center">
+            <h1 class="display-4 fw-bold mb-3">About <span class="text-primary">WebNoX</span></h1>
+            <p class="lead text-muted">
+                An educational platform dedicated to web application security training, designed 
+                by ESTIN engineering students.
+            </p>
+        </div>
+    </div>
+
+    <!-- Mission -->
+    <div class="row mb-5">
+        <div class="col-lg-10 mx-auto">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body p-5">
+                    <div class="row align-items-center">
+                        <div class="col-md-4 text-center mb-4 mb-md-0">
+                            <i class="bi bi-bullseye text-primary" style="font-size: 6rem;"></i>
+                        </div>
+                        <div class="col-md-8">
+                            <h2 class="fw-bold mb-3">Our Mission</h2>
+                            <p class="text-muted">
+                                WebNoX aims to build a modern, interactive, and secure e-learning system where students 
+                                can learn cybersecurity concepts and practice them through realistic labs, integrated 
+                                challenges, and a gamified progression system.
+                            </p>
+                            <p class="text-muted mb-0">
+                                We believe that hands-on experience is the best way to learn security. Our platform 
+                                provides a safe environment to practice real-world vulnerabilities without the risks 
+                                associated with testing on live systems.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Features -->
+    <div class="row mb-5">
+        <div class="col-12 text-center mb-4">
+            <h2 class="fw-bold">Platform Features</h2>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 border-0 shadow-sm text-center">
+                <div class="card-body p-4">
+                    <div class="bg-primary bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                        <i class="bi bi-book text-primary" style="font-size: 2rem;"></i>
+                    </div>
+                    <h5>Structured Courses</h5>
+                    <p class="text-muted small mb-0">
+                        Comprehensive courses covering OWASP Top 10, XSS, SQL Injection, CSRF, 
+                        SSRF, IDOR, and more.
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 border-0 shadow-sm text-center">
+                <div class="card-body p-4">
+                    <div class="bg-success bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                        <i class="bi bi-terminal text-success" style="font-size: 2rem;"></i>
+                    </div>
+                    <h5>Hands-on Labs</h5>
+                    <p class="text-muted small mb-0">
+                        CTF-style challenges with realistic vulnerable applications. 
+                        Capture flags and earn points.
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 border-0 shadow-sm text-center">
+                <div class="card-body p-4">
+                    <div class="bg-warning bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                        <i class="bi bi-trophy text-warning" style="font-size: 2rem;"></i>
+                    </div>
+                    <h5>Gamification</h5>
+                    <p class="text-muted small mb-0">
+                        Earn points, climb the leaderboard, and track your progress 
+                        through badges and achievements.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Vulnerability Types -->
+    <div class="row mb-5">
+        <div class="col-lg-10 mx-auto">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-dark text-light">
+                    <h5 class="mb-0"><i class="bi bi-bug me-2"></i>Vulnerability Types Covered</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <ul class="list-unstyled">
+                                <li class="mb-2"><i class="bi bi-check-circle text-success me-2"></i>Cross-Site Scripting (XSS)</li>
+                                <li class="mb-2"><i class="bi bi-check-circle text-success me-2"></i>SQL Injection</li>
+                                <li class="mb-2"><i class="bi bi-check-circle text-success me-2"></i>Cross-Site Request Forgery (CSRF)</li>
+                                <li class="mb-2"><i class="bi bi-check-circle text-success me-2"></i>Server-Side Request Forgery (SSRF)</li>
+                                <li class="mb-2"><i class="bi bi-check-circle text-success me-2"></i>Insecure Direct Object References (IDOR)</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <ul class="list-unstyled">
+                                <li class="mb-2"><i class="bi bi-check-circle text-success me-2"></i>Authentication Bypass</li>
+                                <li class="mb-2"><i class="bi bi-check-circle text-success me-2"></i>Command Injection</li>
+                                <li class="mb-2"><i class="bi bi-check-circle text-success me-2"></i>File Upload Vulnerabilities</li>
+                                <li class="mb-2"><i class="bi bi-check-circle text-success me-2"></i>XML External Entity (XXE)</li>
+                                <li class="mb-2"><i class="bi bi-check-circle text-success me-2"></i>And many more...</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Team -->
+    <div class="row mb-5">
+        <div class="col-12 text-center mb-4">
+            <h2 class="fw-bold">Our Team</h2>
+            <p class="text-muted">Developed by ESTIN Engineering Students - 2025/2026</p>
+        </div>
+        <div class="col-lg-8 mx-auto">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body p-4">
+                    <p class="text-muted text-center mb-0">
+                        This platform was developed as part of the <strong>Conduite de Projet</strong> module 
+                        at ESTIN (École Supérieure en Sciences et Technologies de l'Informatique et du Numérique). 
+                        Our team of four engineering students worked together to create this comprehensive 
+                        web security training platform.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CTA -->
+    <div class="row">
+        <div class="col-12 text-center">
+            <h3 class="fw-bold mb-3">Ready to Start Learning?</h3>
+            {% if current_user.is_authenticated %}
+            <a href="{{ url_for('courses.list_courses') }}" class="btn btn-primary btn-lg">
+                <i class="bi bi-play-circle me-2"></i>Browse Courses
+            </a>
+            {% else %}
+            <a href="{{ url_for('auth.register') }}" class="btn btn-primary btn-lg">
+                <i class="bi bi-rocket-takeoff me-2"></i>Get Started
+            </a>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
