@@ -210,13 +210,18 @@ build_lab_images() {
 init_database() {
     log "Initializing database..."
     
-    # Create instance directory
+    # Create instance directory on host (will be mounted)
     mkdir -p instance
+    chmod 777 instance
     
-    # Run seed script if database doesn't exist
-    if [ ! -f "instance/webnox.db" ]; then
+    # Wait for container to be ready
+    log "Waiting for webnox-app container to be ready..."
+    sleep 3
+    
+    # Run seed script inside the running container
+    if ! docker exec webnox-app test -f /app/instance/webnox.db 2>/dev/null; then
         log "Running database seed..."
-        docker-compose run --rm webnox-app python seed.py
+        docker exec webnox-app python seed.py
     else
         log "Database already exists, skipping seed"
     fi
