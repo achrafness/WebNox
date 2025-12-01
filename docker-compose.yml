@@ -8,12 +8,17 @@ services:
       dockerfile: Dockerfile
     container_name: webnox-app
     ports:
-      - "5000:5000"
+      - "${APP_PORT:-5000}:5000"
     environment:
       - SECRET_KEY=${SECRET_KEY:-webnox-super-secret-key-change-in-production}
-      - DATABASE_URL=sqlite:///instance/webnox.db
+      - DATABASE_URL=${DATABASE_URL:-sqlite:///instance/webnox.db}
       - DOCKER_HOST=unix:///var/run/docker.sock
       - LAB_NETWORK=webnox-labs
+      # IMPORTANT: This is the host/domain shown to users when accessing labs
+      - LAB_HOST=${LAB_HOST:-localhost}
+      - LAB_PORT_START=${LAB_PORT_START:-10000}
+      - LAB_PORT_END=${LAB_PORT_END:-20000}
+      - FLASK_ENV=${FLASK_ENV:-production}
     volumes:
       - ./instance:/app/instance
       - /var/run/docker.sock:/var/run/docker.sock
