@@ -53,6 +53,7 @@ def create_app(config_name=None):
     from app.routes.labs import labs_bp
     from app.routes.admin import admin_bp
     from app.routes.api import api_bp
+    from app.routes.topics import topics_bp
     
     app.register_blueprint(auth_bp)
     app.register_blueprint(main_bp)
@@ -60,6 +61,7 @@ def create_app(config_name=None):
     app.register_blueprint(labs_bp, url_prefix='/labs')
     app.register_blueprint(admin_bp, url_prefix='/admin')
     app.register_blueprint(api_bp, url_prefix='/api')
+    app.register_blueprint(topics_bp, url_prefix='/topics')
     
     # Create database tables
     with app.app_context():

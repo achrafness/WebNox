@@ -7,6 +7,7 @@ class Lab(db.Model):
     
     id = db.Column(db.Integer, primary_key=True)
     course_id = db.Column(db.Integer, db.ForeignKey('courses.id'), nullable=True)
+    topic_id = db.Column(db.Integer, db.ForeignKey('topics.id'), nullable=True)
     title = db.Column(db.String(200), nullable=False)
     slug = db.Column(db.String(200), unique=True, nullable=False)
     description = db.Column(db.Text, nullable=False)
@@ -19,6 +20,8 @@ class Lab(db.Model):
     hints = db.Column(db.Text, nullable=True)  # JSON array of hints
     docker_image = db.Column(db.String(255), nullable=True)
     docker_port = db.Column(db.Integer, default=8080)
+    has_bot = db.Column(db.Boolean, default=False)  # Whether lab has XSS bot
+    bot_interval = db.Column(db.Integer, default=30)  # Bot visit interval in seconds
     is_active = db.Column(db.Boolean, default=True)
     order = db.Column(db.Integer, default=0)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)

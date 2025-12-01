@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+
+{% block title %}Security Topics - WebNox{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="text-center mb-5">
+        <h1 class="display-4 fw-bold">🛡️ Security Topics</h1>
+        <p class="lead text-muted">Master different types of web security vulnerabilities</p>
+    </div>
+    
+    <div class="row g-4">
+        {% for topic in topics %}
+        <div class="col-md-6 col-lg-4">
+            <div class="card h-100 border-0 shadow-sm topic-card" style="border-left: 4px solid {{ topic.color }} !important;">
+                <div class="card-body">
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="topic-icon me-3" style="background: {{ topic.color }}20; color: {{ topic.color }};">
+                            <i class="fas fa-{{ topic.icon }}"></i>
+                        </div>
+                        <div>
+                            <h5 class="card-title mb-0">{{ topic.name }}</h5>
+                            <span class="badge bg-{{ 'danger' if topic.severity == 'critical' else 'warning' if topic.severity == 'high' else 'info' }}">
+                                {{ topic.severity | upper }}
+                            </span>
+                        </div>
+                    </div>
+                    
+                    <p class="card-text text-muted small">{{ topic.description[:150] }}{% if topic.description|length > 150 %}...{% endif %}</p>
+                    
+                    <div class="d-flex justify-content-between text-muted small mb-3">
+                        <span><i class="fas fa-book me-1"></i> {{ topic.get_total_courses() }} Courses</span>
+                        <span><i class="fas fa-flask me-1"></i> {{ topic.get_total_labs() }} Labs</span>
+                        <span><i class="fas fa-star me-1"></i> {{ topic.get_total_points() }} pts</span>
+                    </div>
+                    
+                    {% if topic.owasp_category %}
+                    <div class="mb-3">
+                        <span class="badge bg-secondary">{{ topic.owasp_category }}</span>
+                    </div>
+                    {% endif %}
+                    
+                    {% if current_user.is_authenticated and topic.id in topic_progress %}
+                    <div class="progress mb-3" style="height: 8px;">
+                        <div class="progress-bar" role="progressbar" 
+                             style="width: {{ topic_progress[topic.id].percentage }}%; background: {{ topic.color }};" 
+                             aria-valuenow="{{ topic_progress[topic.id].percentage }}" 
+                             aria-valuemin="0" aria-valuemax="100">
+                        </div>
+                    </div>
+                    <small class="text-muted">
+                        {{ topic_progress[topic.id].completed }}/{{ topic_progress[topic.id].total }} labs completed
+                    </small>
+                    {% endif %}
+                </div>
+                <div class="card-footer bg-transparent border-0">
+                    <a href="{{ url_for('topics.topic_detail', slug=topic.slug) }}" class="btn btn-outline-primary w-100">
+                        Explore Topic <i class="fas fa-arrow-right ms-2"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<style>
+.topic-card {
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+.topic-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.15) !important;
+}
+.topic-icon {
+    width: 50px;
+    height: 50px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+}
+</style>
+{% endblock %}

@@ -1,0 +1,158 @@
+{% extends "base.html" %}
+
+{% block title %}{{ topic.name }} - WebNox{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <!-- Topic Header -->
+    <div class="card border-0 shadow mb-4" style="border-left: 5px solid {{ topic.color }} !important;">
+        <div class="card-body p-4">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="topic-icon me-3" style="background: {{ topic.color }}20; color: {{ topic.color }};">
+                            <i class="fas fa-{{ topic.icon }} fa-2x"></i>
+                        </div>
+                        <div>
+                            <h1 class="mb-1">{{ topic.name }}</h1>
+                            <span class="badge bg-{{ 'danger' if topic.severity == 'critical' else 'warning' if topic.severity == 'high' else 'info' }} me-2">
+                                {{ topic.severity | upper }} SEVERITY
+                            </span>
+                            {% if topic.owasp_category %}
+                            <span class="badge bg-secondary">{{ topic.owasp_category }}</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <p class="lead mb-0">{{ topic.description }}</p>
+                </div>
+                <div class="col-md-4 text-md-end mt-3 mt-md-0">
+                    <div class="d-flex justify-content-md-end gap-3">
+                        <div class="text-center">
+                            <h3 class="mb-0" style="color: {{ topic.color }};">{{ topic.get_total_courses() }}</h3>
+                            <small class="text-muted">Courses</small>
+                        </div>
+                        <div class="text-center">
+                            <h3 class="mb-0" style="color: {{ topic.color }};">{{ topic.get_total_labs() }}</h3>
+                            <small class="text-muted">Labs</small>
+                        </div>
+                        <div class="text-center">
+                            <h3 class="mb-0" style="color: {{ topic.color }};">{{ topic.get_total_points() }}</h3>
+                            <small class="text-muted">Points</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row">
+        <!-- Courses Section -->
+        <div class="col-lg-6 mb-4">
+            <h3 class="mb-3"><i class="fas fa-book me-2" style="color: {{ topic.color }};"></i>Courses</h3>
+            
+            {% if courses %}
+            {% for course in courses %}
+            <div class="card mb-3 border-0 shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <h5 class="card-title mb-1">{{ course.title }}</h5>
+                            <p class="card-text text-muted small mb-2">{{ course.description[:100] }}...</p>
+                            <div class="d-flex gap-2">
+                                <span class="badge bg-{{ 'success' if course.difficulty == 'beginner' else 'warning' if course.difficulty == 'intermediate' else 'danger' }}">
+                                    {{ course.difficulty | capitalize }}
+                                </span>
+                                <span class="badge bg-light text-dark">
+                                    <i class="fas fa-clock me-1"></i>{{ course.duration_minutes }} min
+                                </span>
+                                <span class="badge bg-light text-dark">
+                                    <i class="fas fa-star me-1"></i>{{ course.points }} pts
+                                </span>
+                            </div>
+                        </div>
+                        <a href="{{ url_for('courses.course_detail', slug=course.slug) }}" class="btn btn-sm btn-outline-primary">
+                            Start
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+            {% else %}
+            <div class="alert alert-info">
+                <i class="fas fa-info-circle me-2"></i>No courses available for this topic yet.
+            </div>
+            {% endif %}
+        </div>
+        
+        <!-- Labs Section -->
+        <div class="col-lg-6 mb-4">
+            <h3 class="mb-3"><i class="fas fa-flask me-2" style="color: {{ topic.color }};"></i>Hands-on Labs</h3>
+            
+            {% if labs %}
+            {% for lab in labs %}
+            <div class="card mb-3 border-0 shadow-sm {% if lab.id in completed_labs %}border-success{% endif %}">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <h5 class="card-title mb-1">
+                                {% if lab.id in completed_labs %}
+                                <i class="fas fa-check-circle text-success me-1"></i>
+                                {% endif %}
+                                {{ lab.title }}
+                                {% if lab.has_bot %}
+                                <span class="badge bg-info ms-1" title="This lab has an automated bot">
+                                    <i class="fas fa-robot"></i> Bot
+                                </span>
+                                {% endif %}
+                            </h5>
+                            <p class="card-text text-muted small mb-2">{{ lab.description[:80] }}...</p>
+                            <div class="d-flex gap-2">
+                                <span class="badge bg-{{ 'success' if lab.difficulty == 'beginner' else 'warning' if lab.difficulty == 'intermediate' else 'danger' }}">
+                                    {{ lab.difficulty | capitalize }}
+                                </span>
+                                <span class="badge bg-light text-dark">
+                                    <i class="fas fa-star me-1"></i>{{ lab.points }} pts
+                                </span>
+                                <span class="badge bg-light text-dark">
+                                    {{ lab.vulnerability_type }}
+                                </span>
+                            </div>
+                        </div>
+                        <a href="{{ url_for('labs.lab_detail', slug=lab.slug) }}" 
+                           class="btn btn-sm {% if lab.id in completed_labs %}btn-success{% else %}btn-primary{% endif %}">
+                            {% if lab.id in completed_labs %}
+                            Review
+                            {% else %}
+                            Start
+                            {% endif %}
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+            {% else %}
+            <div class="alert alert-info">
+                <i class="fas fa-info-circle me-2"></i>No labs available for this topic yet.
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    
+    <div class="text-center mt-4">
+        <a href="{{ url_for('topics.list_topics') }}" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left me-2"></i>Back to Topics
+        </a>
+    </div>
+</div>
+
+<style>
+.topic-icon {
+    width: 70px;
+    height: 70px;
+    border-radius: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+</style>
+{% endblock %}
