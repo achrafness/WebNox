@@ -31,7 +31,15 @@ def create_app(config_name=None):
     
     # Configuration
     app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'webnox-secret-key-change-in-production')
-    app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'sqlite:///webnox.db')
+    
+    # Database configuration - ensure instance folder exists
+    basedir = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
+    instance_path = os.path.join(basedir, 'instance')
+    os.makedirs(instance_path, exist_ok=True)
+    
+    # Default to SQLite in instance folder
+    default_db = f'sqlite:///{os.path.join(instance_path, "webnox.db")}'
+    app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', default_db)
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     
     # Initialize extensions
